@@ -127,11 +127,11 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         sequence2 = new Sequence("GGATCGA");
         frequency1 = initializeFrequencies(true);
         frequency2 = initializeFrequencies(true);
-        matrix = initializeMatrix(sequence1.length, sequence2.length);
+        matrix = initializeMatrix(sequence1.length, sequence2.length, true, -4);
 
-        fillMatrix(matrix, new int[]{2, -1, -2});
+        fillMatrixNucleotide(matrix, new int[]{5, -3, -4});
         printMatrix(matrix);
-        backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
+        globalBacktrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
         printAlignment(sequence1, sequence2);
         countFrequencies(sequence1, sequence2);
         printFrequencies();
@@ -143,7 +143,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 //        });
     }
 
-    public static void fillMatrix(Cell[][] matrix, int[] scoring) {
+    public static void fillMatrixNucleotide(Cell[][] matrix, int[] scoring) {
         Cell currentCell;
         int match = scoring[0];
         int mismatch = scoring[1];
@@ -167,7 +167,32 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         }
     }
 
-    public static void backtrack(Cell cell, int s1, int s2, String seq1, String seq2) {
+    public static void localFillMatrixProtein(Cell[][] matrix, int[] scoring) {
+
+    }
+
+    public static void globalFillMatrixProtein(Cell[][] matrix, int[] scoring) {
+        Cell currentCell;
+
+        for (int i = 1; i < sequence2.length; i++) {
+            for (int j = 1; j < sequence1.length; j++) {
+                currentCell = matrix[j][i];
+
+                if (sequence1.sequence.substring(j - 1, j).matches(
+                        sequence2.sequence.substring(i - 1, i))) {
+                    currentCell.value = currentCell.max(matrix[j - 1][i - 1],
+                            matrix[j - 1][i], matrix[j][i - 1], match, gap);
+                } else {
+                    currentCell.value = currentCell.max(matrix[j - 1][i - 1],
+                            matrix[j - 1][i], matrix[j][i - 1], mismatch, gap);
+                }
+
+                matrix[j][i] = currentCell;
+            }
+        }
+    }
+
+    public static void globalBacktrack(Cell cell, int s1, int s2, String seq1, String seq2) {
         boolean test = false;
 
         if (cell.diagonal != null) {
@@ -250,26 +275,30 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             frequencies = frequencies + pair.getValue();
             f1.remove();
         }
-        
-        keys.replaceAll(".(?=.)", "$0");
+
+        keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
+        frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
         System.out.println(keys);
         System.out.println(frequencies);
+        System.out.println("");
         keys = "";
         frequencies = "";
-        
+
         while (f2.hasNext()) {
             Map.Entry pair = (Map.Entry) f2.next();
             keys = keys + pair.getKey();
             frequencies = frequencies + pair.getValue();
             f2.remove();
         }
-        
+
+        keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
+        frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
         System.out.println(keys);
         System.out.println(frequencies);
     }
 
     public static void printMatrix(Cell[][] matrix) {
-        String format = "%-3s";
+        String format = "%-5s";
 
         for (int i = 0; i < sequence2.length; i++) {
             for (int j = 0; j < sequence1.length; j++) {
@@ -300,19 +329,43 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
     }
 
-    public static Cell[][] initializeMatrix(int m, int n) {
+    public static Cell[][] initializeMatrix(int m, int n, boolean isGlobal, int gap) {
         Cell[][] matrix = new Cell[m][n];
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                matrix[j][i] = new Cell(0);
+        if (isGlobal) {
+            for (int i = 0; i < n; i++) {
+                matrix[0][i] = new Cell(i * gap);
+            }
+
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = new Cell(i * gap);
+            }
+            
+            for (int i = 1; i < n; i++) {
+                for (int j = 1; j < m; j++) {
+                    matrix[j][i] = new Cell(0);
+                }
+            }
+        } else {
+            for (int i = 0; i < n; i++) {
+                matrix[0][i] = new Cell(0);
+            }
+
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = new Cell(0);
+            }
+            
+            for (int i = 1; i < n; i++) {
+                for (int j = 1; j < m; j++) {
+                    matrix[j][i] = new Cell(0);
+                }
             }
         }
 
-        return matrix;
-    }
+    return matrix ;
+}
 
-    public static HashMap<String, Integer> initializeFrequencies(boolean isNucleotide) {
+public static HashMap<String, Integer> initializeFrequencies(boolean isNucleotide) {
         HashMap<String, Integer> map = new HashMap<>();
 
         if (isNucleotide) {
