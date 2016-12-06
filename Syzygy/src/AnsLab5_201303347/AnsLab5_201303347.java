@@ -1,6 +1,7 @@
 package AnsLab5_201303347;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,13 +15,16 @@ class Sequence {
 
     String alignment;
     String sequence;
+    String description;
     int length;
 
-    Sequence(String sequence) {
+    Sequence(String sequence, String description) {
         this.alignment = "";
+        this.description = description;
         this.sequence = sequence.trim();
         this.length = this.sequence.length() + 1;
     }
+
 }
 
 class Cell {
@@ -28,12 +32,16 @@ class Cell {
     Cell diagonal;
     Cell left;
     Cell top;
+    int i;
+    int j;
     int value;
 
-    Cell(int value) {
+    Cell(int value, int i, int j) {
         this.diagonal = null;
         this.left = null;
         this.top = null;
+        this.i = i;
+        this.j = j;
         this.value = value;
     }
 
@@ -42,8 +50,8 @@ class Cell {
         int leftSum = left.value + gap;
         int topSum = top.value + gap;
         int max = base;
-        
-        if(diagonalSum > max) {
+
+        if (diagonalSum > max) {
             max = diagonalSum;
         }
 
@@ -88,21 +96,257 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtarInput = new javax.swing.JTextArea();
+        btnReset = new javax.swing.JButton();
+        btnUpload = new javax.swing.JButton();
+        btnSubmit = new javax.swing.JButton();
+        rdbNucleo = new javax.swing.JRadioButton();
+        rdbProtein = new javax.swing.JRadioButton();
+        lblScheme = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        spnMatch = new javax.swing.JSpinner();
+        spnMismatch = new javax.swing.JSpinner();
+        spnGap = new javax.swing.JSpinner();
+        lblMatrix = new javax.swing.JLabel();
+        rdbPam = new javax.swing.JRadioButton();
+        rdbBlosum = new javax.swing.JRadioButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("Pairwise Sequence Alignment by Deneir Uy"); // NOI18N
+
+        txtarInput.setColumns(20);
+        txtarInput.setRows(5);
+        jScrollPane1.setViewportView(txtarInput);
+
+        btnReset.setText("Reset");
+
+        btnUpload.setText("Upload File");
+
+        btnSubmit.setText("Submit");
+        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubmitActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(rdbNucleo);
+        rdbNucleo.setSelected(true);
+        rdbNucleo.setText("Nucleotide Alignment");
+        rdbNucleo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbNucleoActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(rdbProtein);
+        rdbProtein.setText("Protein Alignment");
+        rdbProtein.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbProteinActionPerformed(evt);
+            }
+        });
+
+        lblScheme.setText("Scoring Scheme");
+
+        jLabel2.setText("Match");
+
+        jLabel3.setText("Mismatch");
+
+        jLabel4.setText("Gap");
+
+        spnMatch.setValue(1);
+
+        spnGap.setValue(-1);
+
+        lblMatrix.setText("Scoring Matrix");
+        lblMatrix.setEnabled(false);
+
+        buttonGroup2.add(rdbPam);
+        rdbPam.setSelected(true);
+        rdbPam.setText("Pam120 (Global)");
+        rdbPam.setEnabled(false);
+
+        buttonGroup2.add(rdbBlosum);
+        rdbBlosum.setText("Blosum62 (Local)");
+        rdbBlosum.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblScheme)
+                                    .addComponent(rdbNucleo)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel4))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(spnMatch, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                                            .addComponent(spnMismatch)
+                                            .addComponent(spnGap)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lblMatrix)
+                                .addComponent(rdbProtein))
+                            .addComponent(rdbPam, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rdbBlosum, javax.swing.GroupLayout.Alignment.LEADING))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnReset)
+                    .addComponent(btnUpload)
+                    .addComponent(btnSubmit))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rdbNucleo)
+                    .addComponent(rdbProtein))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblScheme)
+                    .addComponent(lblMatrix))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(spnMatch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rdbPam))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(spnMismatch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rdbBlosum))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(spnGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+
+        readInput(txtarInput.getText());
+
+        if (rdbNucleo.isSelected()) {
+            frequency1 = initializeFrequencies(true);
+            frequency2 = initializeFrequencies(true);
+            matrix = initializeMatrix(sequence1.length, sequence2.length, true, (Integer) spnGap.getValue());
+            fillMatrixNucleotide(matrix, new int[]{(Integer) spnMatch.getValue(), (Integer) spnMismatch.getValue(), (Integer) spnGap.getValue()});
+            backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
+        } else if (rdbPam.isSelected()) {
+            pam = initializePam();
+            frequency1 = initializeFrequencies(false);
+            frequency2 = initializeFrequencies(false);
+            matrix = initializeMatrix(sequence1.length, sequence2.length, true, -8);
+            globalFillMatrixProtein(matrix);
+            backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
+
+        } else {
+            ArrayList<Cell> cellArray = new ArrayList<>();
+            blosum = initializeBlosum();
+            frequency1 = initializeFrequencies(false);
+            frequency2 = initializeFrequencies(false);
+            matrix = initializeMatrix(sequence1.length, sequence2.length, false, -4);
+            localFillMatrixProtein(matrix);
+            cellArray = findMax(matrix);
+            for (int i = 0; i < cellArray.size(); i++) {
+                backtrack(cellArray.get(i), sequence1.length - cellArray.get(i).j, sequence2.length - cellArray.get(i).i, "", "");
+            }
+        }
+
+        //printMatrix(matrix);
+        countFrequencies(sequence1, sequence2);
+        
+
+        frequency1.clear();
+        frequency2.clear();
+        alignments.clear();
+        sequence1 = new Sequence("");
+        sequence2 = new Sequence("");
+        matrix = initializeMatrix(0, 0, true, 0);
+    }//GEN-LAST:event_btnSubmitActionPerformed
+
+    private void rdbProteinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbProteinActionPerformed
+        spnMatch.setEnabled(false);
+        spnMismatch.setEnabled(false);
+        spnGap.setEnabled(false);
+        lblScheme.setEnabled(false);
+        lblMatrix.setEnabled(true);
+        rdbPam.setEnabled(true);
+        rdbBlosum.setEnabled(true);
+    }//GEN-LAST:event_rdbProteinActionPerformed
+
+    private void rdbNucleoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbNucleoActionPerformed
+        spnMatch.setEnabled(true);
+        spnMismatch.setEnabled(true);
+        spnGap.setEnabled(true);
+        lblScheme.setEnabled(true);
+        lblMatrix.setEnabled(false);
+        rdbPam.setEnabled(false);
+        rdbBlosum.setEnabled(false);
+    }//GEN-LAST:event_rdbNucleoActionPerformed
+
+    public static void readInput(String input) {
+        ArrayList<String> sequences = new ArrayList<>();
+        ArrayList<String> descriptions = new ArrayList<>();
+        Scanner scan = new Scanner(input);
+        String sequenceString = "";
+        String line;
+
+        while (scan.hasNextLine()) {
+            line = scan.nextLine();
+
+            if (!line.isEmpty()) {
+                if (line.contains(">")) {
+                    sequences.add(sequenceString);
+                    descriptions.add(line);
+                    sequenceString = "";
+                } else {
+                    sequenceString += line;
+                }
+            }
+        }
+
+        sequences.add(sequenceString);
+
+        for (int i = 0; i < sequences.size(); i++) {
+            if (sequences.get(i).isEmpty()) {
+                sequences.remove(i);
+            }
+        }
+
+        sequence1 = new Sequence(sequences.get(0), descriptions.get(0));
+        sequence2 = new Sequence(sequences.get(1), descriptions.get(1));
+    }
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -129,24 +373,62 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         //</editor-fold>
         Scanner scan = new Scanner(System.in);
 
-        sequence1 = new Sequence("GAATTCAGTTA");
-        sequence2 = new Sequence("GGATCGA");
-        frequency1 = initializeFrequencies(true);
-        frequency2 = initializeFrequencies(true);
-        matrix = initializeMatrix(sequence1.length, sequence2.length, true, -4);
+        //sequence1 = new Sequence("GAATTCAGTTA");
+        //sequence2 = new Sequence("GGATCGA");
+//        ArrayList<Cell> cellArray = new ArrayList<>();
+//        sequence1 = new Sequence("VLSPADKFLTNV");
+//        sequence2 = new Sequence("VFTELSPAKTV");
+//        frequency1 = initializeFrequencies(false);
+//        frequency2 = initializeFrequencies(false);
+//        matrix = initializeMatrix(sequence1.length, sequence2.length, false, -4);
+//
+//        //fillMatrixNucleotide(matrix, new int[]{5, -3, -4});
+//        pam = initializePam();
+//        blosum = initializeBlosum();
+//        localFillMatrixProtein(matrix);
+//        printMatrix(matrix);
+////        globalBacktrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
+//        cellArray = findMax(matrix);
+//        for (int i = 0; i < cellArray.size(); i++) {
+//            backtrack(cellArray.get(i), sequence1.length - cellArray.get(i).j, sequence2.length - cellArray.get(i).i, "", "");
+//        }
+//
+//        printAlignment(sequence1, sequence2);
+//        countFrequencies(sequence1, sequence2);
+//        printFrequencies();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AnsLab5_201303347().setVisible(true);
+            }
+        });
+    }
 
-        fillMatrixNucleotide(matrix, new int[]{5, -3, -4});
-        printMatrix(matrix);
-        globalBacktrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
-        printAlignment(sequence1, sequence2);
-        countFrequencies(sequence1, sequence2);
-        printFrequencies();
+    public static ArrayList<Cell> findMax(Cell[][] matrix) {
+        ArrayList<Cell> cellArray = new ArrayList<Cell>();
+        Cell currentCell;
+        int max = -9999;
 
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new AnsLab5_201303347().setVisible(true);
-//            }
-//        });
+        for (int i = 1; i < sequence2.length; i++) {
+            for (int j = 1; j < sequence1.length; j++) {
+                currentCell = matrix[j][i];
+
+                if (currentCell.value > max) {
+                    max = currentCell.value;
+                }
+            }
+        }
+
+        for (int i = 1; i < sequence2.length; i++) {
+            for (int j = 1; j < sequence1.length; j++) {
+                currentCell = matrix[j][i];
+
+                if (currentCell.value == max) {
+                    cellArray.add(currentCell);
+                }
+            }
+        }
+        System.out.println("max: " + max);
+        return cellArray;
     }
 
     public static void fillMatrixNucleotide(Cell[][] matrix, int[] scoring) {
@@ -174,7 +456,17 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     }
 
     public static void localFillMatrixProtein(Cell[][] matrix) {
+        Cell currentCell;
 
+        for (int i = 1; i < sequence2.length; i++) {
+            for (int j = 1; j < sequence1.length; j++) {
+                currentCell = matrix[j][i];
+
+                currentCell.value = currentCell.max(matrix[j - 1][i - 1], matrix[j - 1][i], matrix[j][i - 1], blosum.get(sequence1.sequence.substring(j - 1, j)).get(sequence2.sequence.substring(i - 1, i)), -4, 0);
+
+                matrix[j][i] = currentCell;
+            }
+        }
     }
 
     public static void globalFillMatrixProtein(Cell[][] matrix) {
@@ -184,60 +476,57 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             for (int j = 1; j < sequence1.length; j++) {
                 currentCell = matrix[j][i];
 
-                currentCell.value = currentCell.max(matrix[j - 1][i - 1],
-                        matrix[j - 1][i], matrix[j][i - 1], pam.get(
-                                sequence1.sequence.substring(j - 1, j)).get(
-                        sequence2.sequence.substring(i - 1, i)), -4, 0);
+                currentCell.value = currentCell.max(matrix[j - 1][i - 1], matrix[j - 1][i], matrix[j][i - 1], pam.get(sequence1.sequence.substring(j - 1, j)).get(sequence2.sequence.substring(i - 1, i)), -8, -9999);
 
                 matrix[j][i] = currentCell;
             }
         }
     }
 
-    public static void globalBacktrack(Cell cell, int s1, int s2, String seq1, String seq2) {
+    public static void backtrack(Cell cell, int s1, int s2, String seq1, String seq2) {
         boolean test = false;
 
         if (cell.diagonal != null) {
             if (test == true) {
-                seq1 = seq1.substring(2);
-                seq2 = seq2.substring(2);
+                seq1 = seq1.substring(1);
+                seq2 = seq2.substring(1);
             }
 
-            seq1 = " " + sequence1.sequence.substring(
+            seq1 = sequence1.sequence.substring(
                     sequence1.sequence.length() - s1, sequence1.sequence.
                     length() - s1 + 1) + seq1;
-            seq2 = " " + sequence2.sequence.substring(
+            seq2 = sequence2.sequence.substring(
                     sequence2.sequence.length() - s2, sequence2.sequence.
                     length() - s2 + 1) + seq2;
-            globalBacktrack(cell.diagonal, s1 + 1, s2 + 1, seq1, seq2);
+            backtrack(cell.diagonal, s1 + 1, s2 + 1, seq1, seq2);
             test = true;
         }
 
         if (cell.left != null) {
             if (test == true) {
-                seq1 = seq1.substring(2);
-                seq2 = seq2.substring(2);
+                seq1 = seq1.substring(1);
+                seq2 = seq2.substring(1);
             }
 
-            seq1 = " " + sequence1.sequence.substring(
+            seq1 = sequence1.sequence.substring(
                     sequence1.sequence.length() - s1, sequence1.sequence.
                     length() - s1 + 1) + seq1;
-            seq2 = " " + "_" + seq2;
-            globalBacktrack(cell.left, s1 + 1, s2, seq1, seq2);
+            seq2 = "-" + seq2;
+            backtrack(cell.left, s1 + 1, s2, seq1, seq2);
             test = true;
         }
 
         if (cell.top != null) {
             if (test == true) {
-                seq1 = seq1.substring(2);
-                seq2 = seq2.substring(2);
+                seq1 = seq1.substring(1);
+                seq2 = seq2.substring(1);
             }
 
-            seq1 = " " + "_" + seq1;
-            seq2 = " " + sequence2.sequence.substring(
+            seq1 = "-" + seq1;
+            seq2 = sequence2.sequence.substring(
                     sequence2.sequence.length() - s2, sequence2.sequence.
                     length() - s2 + 1) + seq2;
-            globalBacktrack(cell.top, s1, s2 + 1, seq1, seq2);
+            backtrack(cell.top, s1, s2 + 1, seq1, seq2);
             test = true;
         }
 
@@ -254,18 +543,27 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         for (int i = 0; i < sequence1.sequence.length(); i++) {
             key = sequence1.sequence.substring(i, i + 1);
 
-            frequency1.put(key, frequency1.get(key) + 1);
+            if (frequency1.containsKey(key)) {
+                frequency1.put(key, frequency1.get(key) + 1);
+            } else {
+                frequency1.put(key, 1);
+            }
+
         }
 
         for (int i = 0; i < sequence2.sequence.length(); i++) {
             key = sequence2.sequence.substring(i, i + 1);
 
-            frequency2.put(key, frequency2.get(key) + 1);
+            if (frequency2.containsKey(key)) {
+                frequency2.put(key, frequency2.get(key) + 1);
+            } else {
+                frequency2.put(key, 1);
+            }
         }
     }
 
     public static void printFrequencies() {
-        String format = "%-5s";
+        String format = "%-4s";
         String keys = "";
         String frequencies = "";
         Iterator f1 = frequency1.entrySet().iterator();
@@ -280,8 +578,8 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
         frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
-        System.out.println(keys);
-        System.out.println(frequencies);
+        System.out.println(keys + "    #");
+        System.out.println(frequencies + "     " + sequence1.length);
         System.out.println("");
         keys = "";
         frequencies = "";
@@ -295,10 +593,25 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
         frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
-        System.out.println(keys);
-        System.out.println(frequencies);
+        System.out.println(keys + "     #");
+        System.out.println(frequencies + "    " + sequence2.length);
     }
 
+    public static void printOutput() {
+        System.out.println("Pairwise Sequence Alignment ver. 1.0 by Deneir Uy (2013-03347)");
+        System.out.println("Run date: " + new Date());
+        System.out.println("Submitted sequences:");
+        System.out.println(sequence1.description + "\n" + formatString(sequence1.sequence));
+        System.out.println("");
+        System.out.println(sequence2.description + "\n" + formatString(sequence2.sequence));
+        System.out.println("Sequence1 length: " + sequence1.sequence.length());
+        System.out.println("Sequence1 length: " + sequence2.sequence.length());
+        printFrequencies();
+        System.out.println("");
+        System.out.println("Optimal alignment result(s):");
+        printAlignment(sequence1, sequence2);
+    }
+    
     public static void printMatrix(Cell[][] matrix) {
         String format = "%-5s";
 
@@ -311,24 +624,47 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     }
 
     public static void printAlignment(Sequence s1, Sequence s2) {
-        String matches = " ";
+        String matches = "";
+        int k = 0;
 
         for (int i = 0; i < alignments.size(); i++) {
-            for (int j = 1; j < alignments.get(i)[0].length(); j += 2) {
-                if (alignments.get(i)[0].substring(j, j + 1).matches(alignments.get(i)[1].substring(j, j + 1))) {
-                    matches += "| ";
+            for (int j = 0; j < alignments.get(i)[0].length(); j++, k++) {
+                if (k == 10) {
+                    matches += " ";
+                    k = 0;
+                }
+
+                if (alignments.get(i)[0].substring(j, j + 1).equals("-") || alignments.get(i)[1].substring(j, j + 1).equals("_")) {
+                    matches += " ";
+                } else if (alignments.get(i)[0].substring(j, j + 1).matches(alignments.get(i)[1].substring(j, j + 1))) {
+                    matches += "*";
                 } else {
-                    matches += "  ";
+                    matches += ".";
                 }
             }
 
-            System.out.println(alignments.get(i)[0]);
+            System.out.println(formatString(alignments.get(i)[0]));
             System.out.println(matches);
-            System.out.println(alignments.get(i)[1]);
+            System.out.println(formatString(alignments.get(i)[1]));
             System.out.println("");
-            matches = " ";
+            matches = "";
+            k = 0;
         }
 
+    }
+
+    public static String formatString(String alignment) {
+        String formattedAlignment = "";
+        int k = 0;
+        for (int i = 0; i < alignment.length(); i++, k++) {
+            if (k == 10) {
+                formattedAlignment += " ";
+                k = 0;
+            }
+            formattedAlignment += alignment.substring(i, i + 1);
+        }
+
+        return formattedAlignment;
     }
 
     public static Cell[][] initializeMatrix(int m, int n, boolean isGlobal, int gap) {
@@ -336,30 +672,30 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         if (isGlobal) {
             for (int i = 0; i < n; i++) {
-                matrix[0][i] = new Cell(i * gap);
+                matrix[0][i] = new Cell(i * gap, i, 0);
             }
 
             for (int i = 0; i < m; i++) {
-                matrix[i][0] = new Cell(i * gap);
+                matrix[i][0] = new Cell(i * gap, 0, i);
             }
 
             for (int i = 1; i < n; i++) {
                 for (int j = 1; j < m; j++) {
-                    matrix[j][i] = new Cell(0);
+                    matrix[j][i] = new Cell(0, i, j);
                 }
             }
         } else {
             for (int i = 0; i < n; i++) {
-                matrix[0][i] = new Cell(0);
+                matrix[0][i] = new Cell(0, i, 0);
             }
 
             for (int i = 0; i < m; i++) {
-                matrix[i][0] = new Cell(0);
+                matrix[i][0] = new Cell(0, 0, i);
             }
 
             for (int i = 1; i < n; i++) {
                 for (int j = 1; j < m; j++) {
-                    matrix[j][i] = new Cell(0);
+                    matrix[j][i] = new Cell(0, i, j);
                 }
             }
         }
@@ -377,25 +713,28 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             map.put("T", 0);
         } else {
             map.put("A", 0);
-            map.put("C", 0);
+            map.put("R", 0);
+            map.put("N", 0);
             map.put("D", 0);
+            map.put("C", 0);
+            map.put("Q", 0);
             map.put("E", 0);
-            map.put("F", 0);
             map.put("G", 0);
             map.put("H", 0);
             map.put("I", 0);
-            map.put("K", 0);
             map.put("L", 0);
+            map.put("K", 0);
             map.put("M", 0);
-            map.put("N", 0);
+            map.put("F", 0);
             map.put("P", 0);
-            map.put("Q", 0);
-            map.put("R", 0);
             map.put("S", 0);
             map.put("T", 0);
-            map.put("V", 0);
             map.put("W", 0);
             map.put("Y", 0);
+            map.put("V", 0);
+            map.put("B", 0);
+            map.put("Z", 0);
+            map.put("X", 0);
         }
 
         return map;
@@ -1860,5 +2199,24 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSubmit;
+    private javax.swing.JButton btnUpload;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblMatrix;
+    private javax.swing.JLabel lblScheme;
+    private javax.swing.JRadioButton rdbBlosum;
+    private javax.swing.JRadioButton rdbNucleo;
+    private javax.swing.JRadioButton rdbPam;
+    private javax.swing.JRadioButton rdbProtein;
+    private javax.swing.JSpinner spnGap;
+    private javax.swing.JSpinner spnMatch;
+    private javax.swing.JSpinner spnMismatch;
+    private javax.swing.JTextArea txtarInput;
     // End of variables declaration//GEN-END:variables
 }
