@@ -1,11 +1,15 @@
 package AnsLab5_201303347;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -98,6 +102,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
+        flechFasta = new javax.swing.JFileChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtarInput = new javax.swing.JTextArea();
         btnReset = new javax.swing.JButton();
@@ -124,8 +129,18 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         jScrollPane1.setViewportView(txtarInput);
 
         btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
 
         btnUpload.setText("Upload File");
+        btnUpload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUploadActionPerformed(evt);
+            }
+        });
 
         btnSubmit.setText("Submit");
         btnSubmit.addActionListener(new java.awt.event.ActionListener() {
@@ -253,7 +268,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
-
+        int score;
         readInput(txtarInput.getText());
 
         if (rdbNucleo.isSelected()) {
@@ -262,6 +277,9 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             matrix = initializeMatrix(sequence1.length, sequence2.length, true, (Integer) spnGap.getValue());
             fillMatrixNucleotide(matrix, new int[]{(Integer) spnMatch.getValue(), (Integer) spnMismatch.getValue(), (Integer) spnGap.getValue()});
             backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
+            score = matrix[sequence1.sequence.length()][sequence2.sequence.length()].value;
+            
+            System.out.println("======== Nucleotide Global Pairwide Sequence Alignment ========");
         } else if (rdbPam.isSelected()) {
             pam = initializePam();
             frequency1 = initializeFrequencies(false);
@@ -269,7 +287,9 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             matrix = initializeMatrix(sequence1.length, sequence2.length, true, -8);
             globalFillMatrixProtein(matrix);
             backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
-
+            score = matrix[sequence1.sequence.length()][sequence2.sequence.length()].value;
+            
+            System.out.println("======== Protein Global Pairwide Sequence Alignment (PAM120) ========");
         } else {
             ArrayList<Cell> cellArray = new ArrayList<>();
             blosum = initializeBlosum();
@@ -277,21 +297,24 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             frequency2 = initializeFrequencies(false);
             matrix = initializeMatrix(sequence1.length, sequence2.length, false, -4);
             localFillMatrixProtein(matrix);
-            cellArray = findMax(matrix);
+            score = findMaxScore(matrix);
+            cellArray = findMaxCell(score);
             for (int i = 0; i < cellArray.size(); i++) {
                 backtrack(cellArray.get(i), sequence1.length - cellArray.get(i).j, sequence2.length - cellArray.get(i).i, "", "");
             }
+            
+            System.out.println("======== Protein Local Pairwide Sequence Alignment (BLOSUM62) ========");
         }
 
         //printMatrix(matrix);
         countFrequencies(sequence1, sequence2);
+        printOutput(score);
         
-
         frequency1.clear();
         frequency2.clear();
         alignments.clear();
-        sequence1 = new Sequence("");
-        sequence2 = new Sequence("");
+        sequence1 = new Sequence("", "");
+        sequence2 = new Sequence("", "");
         matrix = initializeMatrix(0, 0, true, 0);
     }//GEN-LAST:event_btnSubmitActionPerformed
 
@@ -315,6 +338,36 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         rdbBlosum.setEnabled(false);
     }//GEN-LAST:event_rdbNucleoActionPerformed
 
+    private void btnUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadActionPerformed
+        flechFasta.showOpenDialog(jScrollPane1);
+        File fasta = flechFasta.getSelectedFile();
+        String fastaContents = "";
+
+        try {
+            fastaContents = readFasta(fasta);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(AnsLab5_201303347.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        txtarInput.setText(fastaContents);
+    }//GEN-LAST:event_btnUploadActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        this.dispose();
+        new AnsLab5_201303347().setVisible(true);
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    public String readFasta(File file) throws FileNotFoundException {
+        Scanner scan = new Scanner(file);
+        String contents = "";
+
+        while (scan.hasNextLine()) {
+            contents += scan.nextLine() + "\n";
+        }
+
+        return contents;
+    }
+    
     public static void readInput(String input) {
         ArrayList<String> sequences = new ArrayList<>();
         ArrayList<String> descriptions = new ArrayList<>();
@@ -373,29 +426,6 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         //</editor-fold>
         Scanner scan = new Scanner(System.in);
 
-        //sequence1 = new Sequence("GAATTCAGTTA");
-        //sequence2 = new Sequence("GGATCGA");
-//        ArrayList<Cell> cellArray = new ArrayList<>();
-//        sequence1 = new Sequence("VLSPADKFLTNV");
-//        sequence2 = new Sequence("VFTELSPAKTV");
-//        frequency1 = initializeFrequencies(false);
-//        frequency2 = initializeFrequencies(false);
-//        matrix = initializeMatrix(sequence1.length, sequence2.length, false, -4);
-//
-//        //fillMatrixNucleotide(matrix, new int[]{5, -3, -4});
-//        pam = initializePam();
-//        blosum = initializeBlosum();
-//        localFillMatrixProtein(matrix);
-//        printMatrix(matrix);
-////        globalBacktrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
-//        cellArray = findMax(matrix);
-//        for (int i = 0; i < cellArray.size(); i++) {
-//            backtrack(cellArray.get(i), sequence1.length - cellArray.get(i).j, sequence2.length - cellArray.get(i).i, "", "");
-//        }
-//
-//        printAlignment(sequence1, sequence2);
-//        countFrequencies(sequence1, sequence2);
-//        printFrequencies();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AnsLab5_201303347().setVisible(true);
@@ -403,11 +433,10 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         });
     }
 
-    public static ArrayList<Cell> findMax(Cell[][] matrix) {
-        ArrayList<Cell> cellArray = new ArrayList<Cell>();
+    public static int findMaxScore(Cell[][] matrix) {
         Cell currentCell;
         int max = -9999;
-
+        
         for (int i = 1; i < sequence2.length; i++) {
             for (int j = 1; j < sequence1.length; j++) {
                 currentCell = matrix[j][i];
@@ -417,7 +446,14 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
                 }
             }
         }
-
+        
+        return max;
+    }
+    
+    public static ArrayList<Cell> findMaxCell(int max) {
+        ArrayList<Cell> cellArray = new ArrayList<Cell>();
+        Cell currentCell;
+        
         for (int i = 1; i < sequence2.length; i++) {
             for (int j = 1; j < sequence1.length; j++) {
                 currentCell = matrix[j][i];
@@ -427,7 +463,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
                 }
             }
         }
-        System.out.println("max: " + max);
+        
         return cellArray;
     }
 
@@ -579,7 +615,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
         frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
         System.out.println(keys + "    #");
-        System.out.println(frequencies + "     " + sequence1.length);
+        System.out.println(frequencies + "    " + sequence1.length);
         System.out.println("");
         keys = "";
         frequencies = "";
@@ -593,23 +629,25 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
         frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
-        System.out.println(keys + "     #");
+        System.out.println(keys + "    #");
         System.out.println(frequencies + "    " + sequence2.length);
     }
 
-    public static void printOutput() {
+    public static void printOutput(int score) {
         System.out.println("Pairwise Sequence Alignment ver. 1.0 by Deneir Uy (2013-03347)");
         System.out.println("Run date: " + new Date());
         System.out.println("Submitted sequences:");
         System.out.println(sequence1.description + "\n" + formatString(sequence1.sequence));
         System.out.println("");
         System.out.println(sequence2.description + "\n" + formatString(sequence2.sequence));
+        System.out.println("");
         System.out.println("Sequence1 length: " + sequence1.sequence.length());
         System.out.println("Sequence1 length: " + sequence2.sequence.length());
         printFrequencies();
         System.out.println("");
         System.out.println("Optimal alignment result(s):");
         printAlignment(sequence1, sequence2);
+        System.out.println("Score: " + score);
     }
     
     public static void printMatrix(Cell[][] matrix) {
@@ -634,7 +672,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
                     k = 0;
                 }
 
-                if (alignments.get(i)[0].substring(j, j + 1).equals("-") || alignments.get(i)[1].substring(j, j + 1).equals("_")) {
+                if (alignments.get(i)[0].substring(j, j + 1).equals("-") || alignments.get(i)[1].substring(j, j + 1).equals("-")) {
                     matches += " ";
                 } else if (alignments.get(i)[0].substring(j, j + 1).matches(alignments.get(i)[1].substring(j, j + 1))) {
                     matches += "*";
@@ -2204,6 +2242,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     private javax.swing.JButton btnUpload;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JFileChooser flechFasta;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
