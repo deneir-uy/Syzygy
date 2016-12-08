@@ -411,8 +411,8 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             }
         }
 
-        sequence1 = new Sequence(sequences.get(0), descriptions.get(0));
-        sequence2 = new Sequence(sequences.get(1), descriptions.get(1));
+        sequence1 = new Sequence(sequences.get(0).toUpperCase(), descriptions.get(0));
+        sequence2 = new Sequence(sequences.get(1).toUpperCase(), descriptions.get(1));
     }
 
     public static void main(String args[]) {
@@ -697,7 +697,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         txtarFile.append("Optimal alignment result(s):\n");
         displayAlignment(sequence1, sequence2, txtarFile);
         txtarFile.append("\n" + "Score: " + score);
-        
+
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -715,10 +715,10 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     public static void saveOutput(String text) throws FileNotFoundException {
         JFileChooser choose = new JFileChooser();
         choose.showOpenDialog(new JScrollPane());
-        
+
         File file = choose.getSelectedFile();
         PrintWriter out = new PrintWriter(file);
-        
+
         out.println(text);
         out.close();
     }
