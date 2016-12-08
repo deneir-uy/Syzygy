@@ -1,7 +1,12 @@
 package AnsLab5_201303347;
 
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +15,13 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -270,6 +282,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
         int score;
         readInput(txtarInput.getText());
+        String text = "";
 
         if (rdbNucleo.isSelected()) {
             frequency1 = initializeFrequencies(true);
@@ -278,8 +291,8 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             fillMatrixNucleotide(matrix, new int[]{(Integer) spnMatch.getValue(), (Integer) spnMismatch.getValue(), (Integer) spnGap.getValue()});
             backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
             score = matrix[sequence1.sequence.length()][sequence2.sequence.length()].value;
-            
-            System.out.println("======== Nucleotide Global Pairwide Sequence Alignment ========");
+            text = "======== Nucleotide Global Pairwide Sequence Alignment ========";
+            //System.out.println("======== Nucleotide Global Pairwide Sequence Alignment ========");
         } else if (rdbPam.isSelected()) {
             pam = initializePam();
             frequency1 = initializeFrequencies(false);
@@ -288,8 +301,8 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             globalFillMatrixProtein(matrix);
             backtrack(matrix[sequence1.length - 1][sequence2.length - 1], 1, 1, "", "");
             score = matrix[sequence1.sequence.length()][sequence2.sequence.length()].value;
-            
-            System.out.println("======== Protein Global Pairwide Sequence Alignment (PAM120) ========");
+            text = "======== Protein Global Pairwide Sequence Alignment (PAM120) ========";
+            //System.out.println("======== Protein Global Pairwide Sequence Alignment (PAM120) ========");
         } else {
             ArrayList<Cell> cellArray = new ArrayList<>();
             blosum = initializeBlosum();
@@ -302,14 +315,15 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             for (int i = 0; i < cellArray.size(); i++) {
                 backtrack(cellArray.get(i), sequence1.length - cellArray.get(i).j, sequence2.length - cellArray.get(i).i, "", "");
             }
-            
-            System.out.println("======== Protein Local Pairwide Sequence Alignment (BLOSUM62) ========");
+            text = "======== Protein Local Pairwide Sequence Alignment (BLOSUM62) ========";
+            //System.out.println("======== Protein Local Pairwide Sequence Alignment (BLOSUM62) ========");
         }
 
         //printMatrix(matrix);
         countFrequencies(sequence1, sequence2);
-        printOutput(score);
-        
+        displayOutput(score, text);
+        //printOutput(score, text);
+
         frequency1.clear();
         frequency2.clear();
         alignments.clear();
@@ -367,7 +381,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
 
         return contents;
     }
-    
+
     public static void readInput(String input) {
         ArrayList<String> sequences = new ArrayList<>();
         ArrayList<String> descriptions = new ArrayList<>();
@@ -409,7 +423,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -436,7 +450,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
     public static int findMaxScore(Cell[][] matrix) {
         Cell currentCell;
         int max = -9999;
-        
+
         for (int i = 1; i < sequence2.length; i++) {
             for (int j = 1; j < sequence1.length; j++) {
                 currentCell = matrix[j][i];
@@ -446,14 +460,14 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         return max;
     }
-    
+
     public static ArrayList<Cell> findMaxCell(int max) {
         ArrayList<Cell> cellArray = new ArrayList<Cell>();
         Cell currentCell;
-        
+
         for (int i = 1; i < sequence2.length; i++) {
             for (int j = 1; j < sequence1.length; j++) {
                 currentCell = matrix[j][i];
@@ -463,7 +477,7 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         return cellArray;
     }
 
@@ -598,42 +612,47 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         }
     }
 
-    public static void printFrequencies() {
+    public static String printFrequencies() {
         String format = "%-4s";
-        String keys = "";
-        String frequencies = "";
+        String keys1 = "";
+        String keys2 = "";
+        String frequencies1 = "";
+        String frequencies2 = "";
+        //String combinedFrequencies = "";
         Iterator f1 = frequency1.entrySet().iterator();
         Iterator f2 = frequency2.entrySet().iterator();
 
         while (f1.hasNext()) {
             Map.Entry pair = (Map.Entry) f1.next();
-            keys = keys + pair.getKey();
-            frequencies = frequencies + pair.getValue();
+            keys1 = keys1 + pair.getKey();
+            frequencies1 = frequencies1 + pair.getValue();
             f1.remove();
         }
 
-        keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
-        frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
-        System.out.println(keys + "    #");
-        System.out.println(frequencies + "    " + sequence1.length);
-        System.out.println("");
-        keys = "";
-        frequencies = "";
+        keys1 = keys1.replaceAll(".(?=.)", String.format(format, "$0"));
+        frequencies1 = frequencies1.replaceAll(".(?=.)", String.format(format, "$0"));
+//        System.out.println(keys1 + "    #");
+//        System.out.println(frequencies1 + "    " + sequence1.length);
+//        System.out.println("");
 
         while (f2.hasNext()) {
             Map.Entry pair = (Map.Entry) f2.next();
-            keys = keys + pair.getKey();
-            frequencies = frequencies + pair.getValue();
+            keys2 = keys2 + pair.getKey();
+            frequencies2 = frequencies2 + pair.getValue();
             f2.remove();
         }
 
-        keys = keys.replaceAll(".(?=.)", String.format(format, "$0"));
-        frequencies = frequencies.replaceAll(".(?=.)", String.format(format, "$0"));
-        System.out.println(keys + "    #");
-        System.out.println(frequencies + "    " + sequence2.length);
+        keys2 = keys2.replaceAll(".(?=.)", String.format(format, "$0"));
+        frequencies2 = frequencies2.replaceAll(".(?=.)", String.format(format, "$0"));
+//        System.out.println(keys2 + "    #");
+//        System.out.println(frequencies2 + "    " + sequence2.length);
+
+        return sequence1.description + "\n" + keys1 + "    #\n" + frequencies1 + "    " + sequence1.length
+                + "\n\n" + sequence2.description + "\n" + keys2 + "    #\n" + frequencies2 + "    " + sequence2.length;
     }
 
-    public static void printOutput(int score) {
+    public static void printOutput(int score, String text) {
+        System.out.println(text);
         System.out.println("Pairwise Sequence Alignment ver. 1.0 by Deneir Uy (2013-03347)");
         System.out.println("Run date: " + new Date());
         System.out.println("Submitted sequences:");
@@ -649,7 +668,61 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
         printAlignment(sequence1, sequence2);
         System.out.println("Score: " + score);
     }
-    
+
+    public static void displayOutput(int score, String text) {
+        JFrame frame = new JFrame("Optimal Alignment");
+        JTextArea txtarFile = new JTextArea(40, 55);
+        JScrollPane scrlpaneFile = new JScrollPane(txtarFile);
+        JPanel panel = new JPanel();
+        JButton save = new JButton("Save as Text");
+
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        frame.setLayout(new GridLayout(1, 0));
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        panel.add(scrlpaneFile);
+        panel.add(save);
+        frame.add(panel);
+        txtarFile.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        txtarFile.setEditable(false);
+
+        txtarFile.append(text + "\n");
+        txtarFile.append("Pairwise Sequence Alignment ver. 1.0 by Deneir Uy (2013-03347)\n");
+        txtarFile.append("Run date: " + new Date() + "\n\n");
+        txtarFile.append("Submitted sequences:\n");
+        txtarFile.append(sequence1.description + "\n" + formatString(sequence1.sequence) + "\n\n");
+        txtarFile.append(sequence2.description + "\n" + formatString(sequence2.sequence) + "\n\n");
+        txtarFile.append("Sequence1 length: " + sequence1.sequence.length() + "\n");
+        txtarFile.append("Sequence1 length: " + sequence2.sequence.length() + "\n\n");
+        txtarFile.append(printFrequencies() + "\n\n");
+        txtarFile.append("Optimal alignment result(s):\n");
+        displayAlignment(sequence1, sequence2, txtarFile);
+        txtarFile.append("\n" + "Score: " + score);
+        
+        save.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    saveOutput(txtarFile.getText());
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(AnsLab5_201303347.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public static void saveOutput(String text) throws FileNotFoundException {
+        JFileChooser choose = new JFileChooser();
+        choose.showOpenDialog(new JScrollPane());
+        
+        File file = choose.getSelectedFile();
+        PrintWriter out = new PrintWriter(file);
+        
+        out.println(text);
+        out.close();
+    }
+
     public static void printMatrix(Cell[][] matrix) {
         String format = "%-5s";
 
@@ -687,6 +760,40 @@ public class AnsLab5_201303347 extends javax.swing.JFrame {
             System.out.println("");
             matches = "";
             k = 0;
+
+        }
+
+    }
+
+    public static void displayAlignment(Sequence s1, Sequence s2, JTextArea txtarFile) {
+        String matches = "";
+        int k = 0;
+
+        for (int i = 0; i < alignments.size(); i++) {
+            for (int j = 0; j < alignments.get(i)[0].length(); j++, k++) {
+                if (k == 10) {
+                    matches += " ";
+                    k = 0;
+                }
+
+                if (alignments.get(i)[0].substring(j, j + 1).equals("-") || alignments.get(i)[1].substring(j, j + 1).equals("-")) {
+                    matches += " ";
+                } else if (alignments.get(i)[0].substring(j, j + 1).matches(alignments.get(i)[1].substring(j, j + 1))) {
+                    matches += "*";
+                } else {
+                    matches += ".";
+                }
+            }
+
+            txtarFile.append(formatString(alignments.get(i)[0]));
+            txtarFile.append("\n");
+            txtarFile.append(matches);
+            txtarFile.append("\n");
+            txtarFile.append(formatString(alignments.get(i)[1]));
+            txtarFile.append("\n\n");
+            matches = "";
+            k = 0;
+
         }
 
     }

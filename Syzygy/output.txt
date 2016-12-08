@@ -1,0 +1,33 @@
+======== Nucleotide Global Pairwide Sequence Alignment ========
+Pairwise Sequence Alignment ver. 1.0 by Deneir Uy (2013-03347)
+Run date: Thu Dec 08 14:32:23 PHT 2016
+
+Submitted sequences:
+>nucleotide1
+GAATTCAGTT A
+
+>nucleotide2
+GGATCGA
+
+Sequence1 length: 11
+Sequence1 length: 7
+
+>nucleotide1
+A  C  T  G    #
+4  1  4  2    12
+
+>nucleotide2
+A  C  T  G    #
+2  1  1  3    8
+
+Optimal alignment result(s):
+GAATTCAGTT A
+*.* ** *   *
+GGA-TC-G-- A
+
+GAATTCAGTT A
+*.** * *   *
+GGAT-C-G-- A
+
+
+Score: 2
